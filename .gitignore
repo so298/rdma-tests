@@ -1,0 +1,13 @@
+# Executables
+exe/
+
+# Object files
+*.o
+
+# Temporary files
+hostfile*
+result*
+
+# vscode
+.vscode/
+

@@ -48,7 +48,7 @@ def ask_and_check_passwd(passwd_hash_file):
         print(f"File {passwd_hash_file} does not exist. Create one by ./sha256_hash.py", file=sys.stderr)
         return None
     hex_digest = read_passwd_hash(passwd_hash_file)
-    passwd = getpass.getpass(prompt="Passwd: ")
+    passwd = getpass.getpass(prompt="Password: ")
     hash2 = hashlib.sha256(bytes(passwd, "ascii"))
     hex_digest2 = hash2.hexdigest()
     if hex_digest == hex_digest2:
@@ -67,7 +67,7 @@ def parse_args():
                      help="read the password hash from PASSWD_HASH (default: .passwd_hash)")
     psr.add_argument("--duration", "-d", default=100, type=int,
                      help="measure traffic/packet drop for DURATION seconds (default: 100)")
-    psr.add_argument("switches", help="measure traffic/packet drop for SWITCHES")
+    psr.add_argument("switches", nargs="*", help="measure traffic/packet drop for SWITCHES")
     opt = psr.parse_args()
     return opt
     
@@ -80,7 +80,7 @@ def main():
     pids = []
     #hosts = ["rnwl13", "rnwl14", "rnwl15", "rnwl16", "rnwl17", "rnwl18"]
     hosts = opt.switches
-    sec = 100
+    sec = opt.duration
     print(f"Collect stats from {hosts} for approximately {sec} seconds ...")
     for host in hosts:
         pids.append(fork_ifconfig(host, sec, passwd))

@@ -9,7 +9,7 @@
 #include <mpi.h>
 
 #define NUM_LOOP 200000
-#define DATA_SIZE 1 << 24
+#define DATA_SIZE 1 << 29
 
 int alloc_memory(char **s_buf, char **r_buf, int size);
 int touch_memory(char *s_buf, char *r_buf, int size);

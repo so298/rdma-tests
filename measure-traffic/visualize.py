@@ -7,7 +7,7 @@ DBG = 1
 
 esxi_to_vm_name = {
     "gx031" : "node00",
-    "gx008" : "node01",
+    "gx020" : "node01",
     "gx011" : "node02",
     "gx015" : "node03",
     "gx017" : "node04",
@@ -18,10 +18,10 @@ esxi_to_vm_name = {
     "gx006" : "node09",
     "gx014" : "node10",
     "gx022" : "node11",
-    # "gx002" : "node12",
-    # "gx016" : "node13",
-    # "gx025" : "node14",
-    # "gx009" : "node15",
+    "gx002" : "node12",
+    "gx016" : "node13",
+    "gx025" : "node14",
+    "gx009" : "node15",
 }
     
 
@@ -76,7 +76,7 @@ class ifconfig_data_parser(data_parser):
             (TOK_IFCONFIG_DATE,
              re.compile("=== (?P<y>\d+)\-(?P<m>\d+)\-(?P<d>\d+)\-(?P<H>\d+):(?P<M>\d+):(?P<S>\d+) ===")),
             (TOK_IFCONFIG_IF_BEGIN,
-             re.compile("(?P<iface>[A-Za-z0-9_\-]+): flags=")),
+             re.compile("(?P<iface>[A-Za-z0-9_\.\-]+): flags=")),
             (TOK_IFCONFIG_IF_END,
              re.compile("^$")),
             (TOK_IFCONFIG_RX_PACKETS,
@@ -137,7 +137,7 @@ class bwm_data_parser(data_parser):
              # man bwm-ng
              # unix timestamp;iface_name;bytes_out/s;bytes_in/s;bytes_total/s;bytes_in;bytes_out;packets_out/s;packets_in/s;packets_total/s;packets_in;packets_out;errors_out/s;errors_in/s;errors_in;errors_out
              re.compile("(?P<timestamp>\d+);"
-                        "(?P<iface>[A-Za-z0-9_\-]+);"
+                        "(?P<iface>[A-Za-z0-9_\.\-]+);"
                         "(?P<bytes_out_s>\d+(\.\d+)?);"
                         "(?P<bytes_in_s>\d+(\.\d+)?);"
                         "(?P<bytes_total_s>\d+(\.\d+)?);"
@@ -187,8 +187,8 @@ class interface_data_parser(data_parser):
         self.patterns = [
             (TOK_INTERFACE_RECORD,
              re.compile("(?P<state>[A-Za-z0-9_\-\/]+) +"
-                        "(?P<name>[A-Za-z0-9_\-\/]+) +"
-                        "(?P<mode>[A-Za-z0-9_\-\/]+) *"
+                        "(?P<name>[A-Za-z0-9_\.\-\/]+) +"
+                        "(?P<mode>[A-Za-z0-9_\.\-\/]+) *"
                         "(?P<alias>.*)")),
             (TOK_INTERFACE_END,
              re.compile("^$")),
@@ -315,7 +315,7 @@ def make_alias_table(interfaces):
             aliases[host][iface] = alias
     return aliases
 
-TRAFFIC_THRESHOLD = 3e10        # >30GB
+TRAFFIC_THRESHOLD = 1e9        # >30GB
 DROP_THRESHOLD = 10
 
 def node_layer(node):
@@ -354,10 +354,10 @@ def main():
     aliases = make_alias_table(interfaces)
     traffic = high_bytes(bw_stats, aliases)
     dropped = high_dropped(ifconfig_stats, aliases)
-    save_graph(traffic, dropped, 1, "up.dot")
-    save_graph(traffic, dropped, -1, "down.dot")
-    os.system("dot up.dot -Tpdf -o up.pdf")
-    os.system("dot down.dot -Tpdf -o down.pdf")
+    save_graph(traffic, dropped, 1, "data/up.dot")
+    save_graph(traffic, dropped, -1, "data/down.dot")
+    os.system("dot data/up.dot -Tpdf -o data/up.pdf")
+    os.system("dot data/down.dot -Tpdf -o data/down.pdf")
     print("OK")
     # return bytes_out, bytes_in, rx_dropped, tx_dropped
     return 0
